@@ -2,11 +2,21 @@ package com.gazmanzara.library.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "books")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
 public class Book {
 
     @Id
@@ -21,30 +31,65 @@ public class Book {
 
     private String imgUrl;
 
+    @NotNull(message = "ISBN must not be null")
+    @Column(unique = true)
+    private String isbn;
+
+    @Column(name = "publication_year")
+    private Integer publicationYear;
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
 
     @ManyToMany
     @JoinTable(
-            name = "book_category",
+            name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
 
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "book-borrow")
+    private Set<BorrowedBook> borrowedBooks = new HashSet<>();
+
     public Book() {}
 
-    public Book(String title, String description, String imgUrl, Author author, Set<Category> categories) {
+    public Book(String title, String isbn, Author author) {
         this.title = title;
-        this.description = description;
-        this.imgUrl = imgUrl;
+        this.isbn = isbn;
         this.author = author;
-        this.categories = categories;
     }
 
-    // Getters and setters below...
+    // Helper method to check if book is currently borrowed
+    public boolean isCurrentlyBorrowed() {
+        return borrowedBooks.stream()
+                .anyMatch(borrow -> borrow.getStatus() == BorrowStatus.BORROWED);
+    }
 
+    // Helper method to get current borrow record if exists
+    public BorrowedBook getCurrentBorrow() {
+        return borrowedBooks.stream()
+                .filter(borrow -> borrow.getStatus() == BorrowStatus.BORROWED)
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Helper method to add a borrow record
+    public void addBorrowedBook(BorrowedBook borrowedBook) {
+        borrowedBooks.add(borrowedBook);
+        borrowedBook.setBook(this);
+    }
+
+    // Helper method to remove a borrow record
+    public void removeBorrowedBook(BorrowedBook borrowedBook) {
+        borrowedBooks.remove(borrowedBook);
+        borrowedBook.setBook(null);
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -77,6 +122,22 @@ public class Book {
         this.imgUrl = imgUrl;
     }
 
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
     public Author getAuthor() {
         return author;
     }
@@ -91,5 +152,13 @@ public class Book {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public Set<BorrowedBook> getBorrowedBooks() {
+        return borrowedBooks;
+    }
+
+    public void setBorrowedBooks(Set<BorrowedBook> borrowedBooks) {
+        this.borrowedBooks = borrowedBooks;
     }
 }

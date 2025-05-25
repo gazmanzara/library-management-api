@@ -1,0 +1,452 @@
+{
+	"info": {
+		"_postman_id": "library-api-collection",
+		"name": "Library API",
+		"description": "Collection for testing Library Management System API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "Get All Authors",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/authors",
+						"description": "Retrieve all authors"
+					}
+				},
+				{
+					"name": "Search Authors",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/authors/search?name={{authorName}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "authors", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{authorName}}"
+								}
+							]
+						},
+						"description": "Search authors by name"
+					}
+				},
+				{
+					"name": "Create Author",
+					"request": {
+						"method": "POST",
+						"url": "http://localhost:8080/api/authors",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"biography\": \"British author best known for the Harry Potter series\"\n}"
+						},
+						"description": "Create a new author"
+					}
+				},
+				{
+					"name": "Update Author",
+					"request": {
+						"method": "PUT",
+						"url": "http://localhost:8080/api/authors/1",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"biography\": \"Updated biography: British author best known for the Harry Potter series and other works\"\n}"
+						},
+						"description": "Update an existing author"
+					}
+				},
+				{
+					"name": "Get Author by ID",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/authors/1",
+						"description": "Get author by ID"
+					}
+				},
+				{
+					"name": "Delete Author",
+					"request": {
+						"method": "DELETE",
+						"url": "http://localhost:8080/api/authors/1",
+						"description": "Delete author by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/categories",
+						"description": "Retrieve all categories"
+					}
+				},
+				{
+					"name": "Search Categories",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/categories/search?name={{categoryName}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "categories", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{categoryName}}"
+								}
+							]
+						},
+						"description": "Search categories by name"
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"url": "http://localhost:8080/api/categories",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fantasy\",\n    \"description\": \"Fantasy literature genre\"\n}"
+						},
+						"description": "Create a new category"
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/categories/1",
+						"description": "Get category by ID"
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"url": "http://localhost:8080/api/categories/1",
+						"description": "Delete category by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/books",
+						"description": "Retrieve all books"
+					}
+				},
+				{
+					"name": "Search Books",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/books/search?title={{title}}&isbn={{isbn}}&authorId={{authorId}}&year={{year}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "books", "search"],
+							"query": [
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"description": "Search by title"
+								},
+								{
+									"key": "isbn",
+									"value": "{{isbn}}",
+									"description": "Search by ISBN"
+								},
+								{
+									"key": "authorId",
+									"value": "{{authorId}}",
+									"description": "Search by author ID"
+								},
+								{
+									"key": "year",
+									"value": "{{year}}",
+									"description": "Search by publication year"
+								}
+							]
+						},
+						"description": "Search books with various criteria"
+					}
+				},
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"url": "http://localhost:8080/api/books",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Harry Potter and the Philosopher's Stone\",\n    \"description\": \"The first book in the Harry Potter series\",\n    \"isbn\": \"9780747532743\",\n    \"publicationYear\": 1997,\n    \"imgUrl\": \"https://example.com/book-cover.jpg\",\n    \"authorId\": 1,\n    \"categoryIds\": [1]\n}"
+						},
+						"description": "Create a new book"
+					}
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"url": "http://localhost:8080/api/books/1",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Harry Potter and the Philosopher's Stone\",\n    \"description\": \"Updated description: The first book in the Harry Potter series, where Harry discovers he's a wizard\",\n    \"isbn\": \"9780747532743\",\n    \"publicationYear\": 1997,\n    \"imgUrl\": \"https://example.com/book-cover-updated.jpg\",\n    \"authorId\": 1,\n    \"categoryIds\": [1, 2]\n}"
+						},
+						"description": "Update an existing book"
+					}
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/books/1",
+						"description": "Get book by ID"
+					}
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"url": "http://localhost:8080/api/books/1",
+						"description": "Delete book by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Members",
+			"item": [
+				{
+					"name": "Get All Members",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/members",
+						"description": "Retrieve all members"
+					}
+				},
+				{
+					"name": "Search Members",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/members/search?name={{name}}&email={{email}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "members", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{name}}",
+									"description": "Search by name"
+								},
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"description": "Search by email"
+								}
+							]
+						},
+						"description": "Search members by name or email"
+					}
+				},
+				{
+					"name": "Create Member",
+					"request": {
+						"method": "POST",
+						"url": "http://localhost:8080/api/members",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"1234567890\"\n}"
+						},
+						"description": "Create a new member"
+					}
+				},
+				{
+					"name": "Update Member",
+					"request": {
+						"method": "PUT",
+						"url": "http://localhost:8080/api/members/1",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"0987654321\"\n}"
+						},
+						"description": "Update an existing member"
+					}
+				},
+				{
+					"name": "Get Member by ID",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/members/1",
+						"description": "Get member by ID"
+					}
+				},
+				{
+					"name": "Delete Member",
+					"request": {
+						"method": "DELETE",
+						"url": "http://localhost:8080/api/members/1",
+						"description": "Delete member by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Borrowed Books",
+			"item": [
+				{
+					"name": "Borrow Book",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "http://localhost:8080/api/borrowed-books/borrow?bookId={{bookId}}&memberId={{memberId}}&durationInDays={{durationInDays}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "borrowed-books", "borrow"],
+							"query": [
+								{
+									"key": "bookId",
+									"value": "{{bookId}}",
+									"description": "ID of the book to borrow"
+								},
+								{
+									"key": "memberId",
+									"value": "{{memberId}}",
+									"description": "ID of the member borrowing the book"
+								},
+								{
+									"key": "durationInDays",
+									"value": "{{durationInDays}}",
+									"description": "Optional: Duration of the loan in days (defaults to 14)",
+									"required": false
+								}
+							]
+						},
+						"description": "Borrow a book. Will fail if:\n- Book is already borrowed\n- Book doesn't exist\n- Member doesn't exist\n- Member has overdue books"
+					}
+				},
+				{
+					"name": "Return Book",
+					"request": {
+						"method": "POST",
+						"url": "http://localhost:8080/api/borrowed-books/1/return",
+						"description": "Return a borrowed book. Will fail if:\n- Borrow record doesn't exist\n- Book is already returned"
+					}
+				},
+				{
+					"name": "Get Member's Borrows",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/borrowed-books/member/1?current={{current}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "borrowed-books", "member", "1"],
+							"query": [
+								{
+									"key": "current",
+									"value": "{{current}}",
+									"description": "Optional: Set to true to get only currently borrowed books",
+									"required": false
+								}
+							]
+						},
+						"description": "Get all or current borrowed books for a member"
+					}
+				},
+				{
+					"name": "Get Book's Borrow History",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/borrowed-books/book/1",
+						"description": "Get complete borrowing history for a book, ordered by borrow date (most recent first)"
+					}
+				},
+				{
+					"name": "Get Books Due Before Date",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://localhost:8080/api/borrowed-books/due-before?date={{date}}",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "borrowed-books", "due-before"],
+							"query": [
+								{
+									"key": "date",
+									"value": "{{date}}",
+									"description": "Optional: Check date (defaults to current time)",
+									"required": false
+								}
+							]
+						},
+						"description": "Get all borrowed books that are due before a specific date"
+					}
+				},
+				{
+					"name": "Get Borrow by ID",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/borrowed-books/1",
+						"description": "Get details of a specific borrowed book record"
+					}
+				}
+			]
+		}
+	]
+} 

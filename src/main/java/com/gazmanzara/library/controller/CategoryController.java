@@ -2,50 +2,66 @@ package com.gazmanzara.library.controller;
 
 import com.gazmanzara.library.model.Category;
 import com.gazmanzara.library.repository.CategoryRepository;
+import com.gazmanzara.library.exception.ResourceNotFoundException;
+import com.gazmanzara.library.exception.ResourceAlreadyExistsException;
+
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 public class CategoryController {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    // Get all categories
+    public CategoryController(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryRepository.findAll());
     }
 
-    // Create new category
+    @GetMapping("/search")
+    public ResponseEntity<List<Category>> searchCategories(@RequestParam String name) {
+        return ResponseEntity.ok(categoryRepository.findByNameContainingIgnoreCase(name));
+    }
+
     @PostMapping
-    public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         if (categoryRepository.existsByName(category.getName())) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("msg", "Category name exist"));
+            throw new ResourceAlreadyExistsException("Category", "name", category.getName());
         }
+        
         Category savedCategory = categoryRepository.save(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
+        
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedCategory.getId())
+                .toUri();
+        
+        return ResponseEntity.created(location).body(savedCategory);
     }
 
-    // Get category by ID
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id " + id));
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
+        return ResponseEntity.ok(category);
     }
 
-    // Delete category by ID
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Category", "id", id);
+        }
         categoryRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -14,7 +14,7 @@ public class LibraryApplication {
 	}
 
 	@GetMapping("/")
-	public String helloWorld() {
-		return "Hello, world!!!";
+	public String welcome() {
+		return "Elcome to Library API!!!";
 	}
 }

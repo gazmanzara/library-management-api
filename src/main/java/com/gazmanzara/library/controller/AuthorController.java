@@ -2,50 +2,84 @@ package com.gazmanzara.library.controller;
 
 import com.gazmanzara.library.model.Author;
 import com.gazmanzara.library.repository.AuthorRepository;
+import com.gazmanzara.library.exception.ResourceNotFoundException;
+import com.gazmanzara.library.exception.ResourceAlreadyExistsException;
+
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/authors")
+@RequestMapping("/api/authors")
 public class AuthorController {
 
-    @Autowired
-    private AuthorRepository authorRepository;
+    private final AuthorRepository authorRepository;
 
-    // Get all authors
+    public AuthorController(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
+    }
+
     @GetMapping
-    public List<Author> getAllAuthors() {
-        return authorRepository.findAll();
+    public ResponseEntity<List<Author>> getAllAuthors() {
+        return ResponseEntity.ok(authorRepository.findAll());
     }
 
-    // Create new author
+    @GetMapping("/search")
+    public ResponseEntity<List<Author>> searchAuthors(@RequestParam String name) {
+        return ResponseEntity.ok(authorRepository.findByNameContainingIgnoreCase(name));
+    }
+
     @PostMapping
-    public ResponseEntity<?> createAuthor(@Valid @RequestBody Author author) {
+    public ResponseEntity<Author> createAuthor(@Valid @RequestBody Author author) {
         if (authorRepository.existsByName(author.getName())) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("msg", "Author name exist"));
+            throw new ResourceAlreadyExistsException("Author", "name", author.getName());
         }
+        
         Author savedAuthor = authorRepository.save(author);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
+        
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedAuthor.getId())
+                .toUri();
+        
+        return ResponseEntity.created(location).body(savedAuthor);
     }
 
-    // Get author by ID
     @GetMapping("/{id}")
-    public Author getAuthorById(@PathVariable Long id) {
-        return authorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Author not found with id " + id));
+    public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author", "id", id));
+        return ResponseEntity.ok(author);
     }
 
-    // Delete author by ID
     @DeleteMapping("/{id}")
-    public void deleteAuthor(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
+        if (!authorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Author", "id", id);
+        }
         authorRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Author> updateAuthor(@PathVariable Long id, @Valid @RequestBody Author authorRequest) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author", "id", id));
+
+        // Check if new name is different and already exists
+        if (!author.getName().equals(authorRequest.getName()) && authorRepository.existsByName(authorRequest.getName())) {
+            throw new ResourceAlreadyExistsException("Author", "name", authorRequest.getName());
+        }
+
+        // Update author properties
+        author.setName(authorRequest.getName());
+        author.setBiography(authorRequest.getBiography());
+
+        Author updatedAuthor = authorRepository.save(author);
+        return ResponseEntity.ok(updatedAuthor);
     }
 }

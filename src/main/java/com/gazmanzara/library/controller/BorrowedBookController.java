@@ -128,4 +128,13 @@ public class BorrowedBookController {
                 .orElseThrow(() -> new ResourceNotFoundException("BorrowedBook", "id", id));
         return ResponseEntity.ok(borrowedBook);
     }
+
+    @GetMapping
+    public ResponseEntity<List<BorrowedBook>> getAllBorrowedBooks(
+            @RequestParam(required = false) BorrowStatus status) {
+        if (status != null) {
+            return ResponseEntity.ok(borrowedBookRepository.findByStatus(status));
+        }
+        return ResponseEntity.ok(borrowedBookRepository.findAll());
+    }
 }

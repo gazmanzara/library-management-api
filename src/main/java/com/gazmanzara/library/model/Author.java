@@ -2,7 +2,7 @@ package com.gazmanzara.library.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Author {
     @Column(columnDefinition = "TEXT")
     private String biography;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Book> books = new ArrayList<>();
 

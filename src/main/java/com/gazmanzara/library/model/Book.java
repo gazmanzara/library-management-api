@@ -3,7 +3,6 @@ package com.gazmanzara.library.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -38,7 +37,6 @@ public class Book {
     @Column(name = "publication_year")
     private Integer publicationYear;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;

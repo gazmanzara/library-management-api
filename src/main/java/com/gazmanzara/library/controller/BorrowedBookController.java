@@ -41,7 +41,7 @@ public class BorrowedBookController {
             @RequestParam Long bookId,
             @RequestParam Long memberId,
             @RequestParam(required = false) Integer durationInDays) {
-        
+
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
 
@@ -94,15 +94,16 @@ public class BorrowedBookController {
     public ResponseEntity<List<BorrowedBook>> getMemberBorrows(
             @PathVariable Long memberId,
             @RequestParam(required = false) Boolean current) {
-        
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "id", memberId));
 
         if (Boolean.TRUE.equals(current)) {
             return ResponseEntity.ok(List.copyOf(member.getCurrentBorrows()));
         }
-        
-        return ResponseEntity.ok(borrowedBookRepository.findByMemberIdAndStatus(memberId, BorrowStatus.BORROWED));
+
+        // Return all borrow records for the member (both current and historical)
+        return ResponseEntity.ok(List.copyOf(member.getBorrowedBooks()));
     }
 
     @GetMapping("/book/{bookId}")
@@ -115,11 +116,10 @@ public class BorrowedBookController {
     @GetMapping("/due-before")
     public ResponseEntity<List<BorrowedBook>> getBorrowsDueBefore(
             @RequestParam(required = false) LocalDateTime date) {
-        
+
         LocalDateTime checkDate = date != null ? date : LocalDateTime.now();
         return ResponseEntity.ok(
-            borrowedBookRepository.findByStatusAndDueDateBefore(BorrowStatus.BORROWED, checkDate)
-        );
+                borrowedBookRepository.findByStatusAndDueDateBefore(BorrowStatus.BORROWED, checkDate));
     }
 
     @GetMapping("/{id}")
@@ -128,4 +128,4 @@ public class BorrowedBookController {
                 .orElseThrow(() -> new ResourceNotFoundException("BorrowedBook", "id", id));
         return ResponseEntity.ok(borrowedBook);
     }
-} 
+}

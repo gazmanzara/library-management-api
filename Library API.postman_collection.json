@@ -447,6 +447,59 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Overview",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/overview",
+						"description": "Get overview statistics including:\n- Total books count\n- Currently borrowed books count\n- Available books count\n- Total members count\n- Active members count\n- Members with overdue books count"
+					}
+				},
+				{
+					"name": "Get Popular Books",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/books/popular",
+						"description": "Get top 10 most borrowed books with:\n- Book ID\n- Title\n- Author name\n- Total borrow count"
+					}
+				},
+				{
+					"name": "Get Books by Category",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/books/by-category",
+						"description": "Get distribution of books across categories with:\n- Category name\n- Number of books in category"
+					}
+				},
+				{
+					"name": "Get Top Borrowers",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/members/top-borrowers",
+						"description": "Get top 10 members who borrow the most with:\n- Member ID\n- Full name\n- Total borrow count\n- Current borrows count"
+					}
+				},
+				{
+					"name": "Get Overdue Books",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/borrows/overdue",
+						"description": "Get all currently overdue books with:\n- Book title\n- Member name\n- Due date\n- Days overdue"
+					}
+				},
+				{
+					"name": "Get Recent Borrows",
+					"request": {
+						"method": "GET",
+						"url": "http://localhost:8080/api/dashboard/borrows/recent",
+						"description": "Get 10 most recent borrows with:\n- Book title\n- Member name\n- Borrow date\n- Due date\n- Current status"
+					}
+				}
+			]
 		}
 	]
 } 

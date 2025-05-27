@@ -1,6 +1,5 @@
 package com.gazmanzara.library.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -13,16 +12,14 @@ public class BorrowedBook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id", nullable = false)
     @NotNull(message = "Book is required")
-    @JsonBackReference(value = "book-borrow")
     private Book book;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id", nullable = false)
     @NotNull(message = "Member is required")
-    @JsonBackReference(value = "member-borrow")
     private Member member;
 
     @NotNull(message = "Borrow date is required")
@@ -100,4 +97,4 @@ public class BorrowedBook {
     public void setStatus(BorrowStatus status) {
         this.status = status;
     }
-} 
+}

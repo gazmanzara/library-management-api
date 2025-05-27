@@ -3,19 +3,13 @@ package com.gazmanzara.library.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "books")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class,
-    property = "id"
-)
 public class Book {
 
     @Id
@@ -37,23 +31,20 @@ public class Book {
     @Column(name = "publication_year")
     private Integer publicationYear;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @ManyToMany
-    @JoinTable(
-            name = "book_categories",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "book-borrow")
     private Set<BorrowedBook> borrowedBooks = new HashSet<>();
 
-    public Book() {}
+    public Book() {
+    }
 
     public Book(String title, String isbn, Author author) {
         this.title = title;
@@ -62,16 +53,19 @@ public class Book {
     }
 
     // Helper method to check if book is currently borrowed
+    @JsonProperty("currentlyBorrowed")
     public boolean isCurrentlyBorrowed() {
         return borrowedBooks.stream()
                 .anyMatch(borrow -> borrow.getStatus() == BorrowStatus.BORROWED);
     }
 
     // Helper method to get current borrow record if exists
-    public BorrowedBook getCurrentBorrow() {
+    @JsonProperty("currentBorrow")
+    public Long getCurrentBorrowId() {
         return borrowedBooks.stream()
                 .filter(borrow -> borrow.getStatus() == BorrowStatus.BORROWED)
                 .findFirst()
+                .map(BorrowedBook::getId)
                 .orElse(null);
     }
 
@@ -152,6 +146,7 @@ public class Book {
         this.categories = categories;
     }
 
+    @JsonIgnore
     public Set<BorrowedBook> getBorrowedBooks() {
         return borrowedBooks;
     }

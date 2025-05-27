@@ -1,10 +1,12 @@
 package com.gazmanzara.library.controller;
+
 import com.gazmanzara.library.model.Book;
 import com.gazmanzara.library.model.Author;
 import com.gazmanzara.library.model.Category;
 import com.gazmanzara.library.repository.BookRepository;
 import com.gazmanzara.library.repository.AuthorRepository;
 import com.gazmanzara.library.repository.CategoryRepository;
+import com.gazmanzara.library.repository.BorrowedBookRepository;
 import com.gazmanzara.library.exception.ResourceNotFoundException;
 import com.gazmanzara.library.exception.ResourceAlreadyExistsException;
 
@@ -27,7 +29,11 @@ public class BookController {
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
 
-    public BookController(BookRepository bookRepository, AuthorRepository authorRepository, CategoryRepository categoryRepository) {
+    public BookController(
+            BookRepository bookRepository,
+            AuthorRepository authorRepository,
+            CategoryRepository categoryRepository,
+            BorrowedBookRepository borrowedBookRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.categoryRepository = categoryRepository;
@@ -45,25 +51,25 @@ public class BookController {
             @RequestParam(required = false) String isbn,
             @RequestParam(required = false) Long authorId,
             @RequestParam(required = false) Integer year) {
-        
+
         if (isbn != null) {
             return bookRepository.findByIsbn(isbn)
                     .map(book -> ResponseEntity.ok(List.of(book)))
                     .orElse(ResponseEntity.ok(List.of()));
         }
-        
+
         if (title != null) {
             return ResponseEntity.ok(bookRepository.findByTitleContainingIgnoreCase(title));
         }
-        
+
         if (authorId != null) {
             return ResponseEntity.ok(bookRepository.findByAuthorId(authorId));
         }
-        
+
         if (year != null) {
             return ResponseEntity.ok(bookRepository.findByPublicationYear(year));
         }
-        
+
         return ResponseEntity.ok(bookRepository.findAll());
     }
 
@@ -85,10 +91,9 @@ public class BookController {
         }
 
         Book book = new Book(
-            bookRequest.getTitle(),
-            bookRequest.getIsbn(),
-            author
-        );
+                bookRequest.getTitle(),
+                bookRequest.getIsbn(),
+                author);
         book.setDescription(bookRequest.getDescription());
         book.setImgUrl(bookRequest.getImgUrl());
         book.setPublicationYear(bookRequest.getPublicationYear());
@@ -153,6 +158,11 @@ public class BookController {
         return ResponseEntity.ok(updatedBook);
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<Book>> getActiveBooks() {
+        return ResponseEntity.ok(bookRepository.findActiveBooks());
+    }
+
     public static class BookRequest {
         @NotBlank(message = "Book title must not be blank")
         private String title;
@@ -173,25 +183,60 @@ public class BookController {
         private List<Long> categoryIds;
 
         // Getters and setters
-        public String getTitle() { return title; }
-        public void setTitle(String title) { this.title = title; }
+        public String getTitle() {
+            return title;
+        }
 
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
+        public void setTitle(String title) {
+            this.title = title;
+        }
 
-        public String getImgUrl() { return imgUrl; }
-        public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }
+        public String getDescription() {
+            return description;
+        }
 
-        public String getIsbn() { return isbn; }
-        public void setIsbn(String isbn) { this.isbn = isbn; }
+        public void setDescription(String description) {
+            this.description = description;
+        }
 
-        public Integer getPublicationYear() { return publicationYear; }
-        public void setPublicationYear(Integer publicationYear) { this.publicationYear = publicationYear; }
+        public String getImgUrl() {
+            return imgUrl;
+        }
 
-        public Long getAuthorId() { return authorId; }
-        public void setAuthorId(Long authorId) { this.authorId = authorId; }
+        public void setImgUrl(String imgUrl) {
+            this.imgUrl = imgUrl;
+        }
 
-        public List<Long> getCategoryIds() { return categoryIds; }
-        public void setCategoryIds(List<Long> categoryIds) { this.categoryIds = categoryIds; }
+        public String getIsbn() {
+            return isbn;
+        }
+
+        public void setIsbn(String isbn) {
+            this.isbn = isbn;
+        }
+
+        public Integer getPublicationYear() {
+            return publicationYear;
+        }
+
+        public void setPublicationYear(Integer publicationYear) {
+            this.publicationYear = publicationYear;
+        }
+
+        public Long getAuthorId() {
+            return authorId;
+        }
+
+        public void setAuthorId(Long authorId) {
+            this.authorId = authorId;
+        }
+
+        public List<Long> getCategoryIds() {
+            return categoryIds;
+        }
+
+        public void setCategoryIds(List<Long> categoryIds) {
+            this.categoryIds = categoryIds;
+        }
     }
 }

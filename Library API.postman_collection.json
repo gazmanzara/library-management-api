@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "library-api-collection",
     "name": "Library API",
-    "description": "Collection for testing Library Management System API",
+    "description": "Collection for testing Library Management System API endpoints. This collection includes all endpoints for managing books, authors, members, categories, borrowed books, and dashboard analytics.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -14,7 +14,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/authors",
-            "description": "Retrieve all authors"
+            "description": "Retrieve all authors in the system"
           }
         },
         {
@@ -29,11 +29,12 @@
               "query": [
                 {
                   "key": "name",
-                  "value": "{{authorName}}"
+                  "value": "{{authorName}}",
+                  "description": "Name or partial name to search for"
                 }
               ]
             },
-            "description": "Search authors by name"
+            "description": "Search authors by name (case-insensitive partial match)"
           }
         },
         {
@@ -51,7 +52,7 @@
               "mode": "raw",
               "raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"biography\": \"British author best known for the Harry Potter series\"\n}"
             },
-            "description": "Create a new author"
+            "description": "Create a new author. Name must be unique."
           }
         },
         {
@@ -69,7 +70,7 @@
               "mode": "raw",
               "raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"biography\": \"Updated biography: British author best known for the Harry Potter series and other works\"\n}"
             },
-            "description": "Update an existing author"
+            "description": "Update an existing author. Name must remain unique."
           }
         },
         {
@@ -77,7 +78,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/authors/1",
-            "description": "Get author by ID"
+            "description": "Get author details by ID"
           }
         },
         {
@@ -85,7 +86,7 @@
           "request": {
             "method": "DELETE",
             "url": "http://localhost:8080/api/authors/1",
-            "description": "Delete author by ID"
+            "description": "Delete author by ID. Will fail if author has associated books."
           }
         }
       ]
@@ -98,7 +99,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/categories",
-            "description": "Retrieve all categories"
+            "description": "Retrieve all book categories"
           }
         },
         {
@@ -113,11 +114,12 @@
               "query": [
                 {
                   "key": "name",
-                  "value": "{{categoryName}}"
+                  "value": "{{categoryName}}",
+                  "description": "Category name or partial name to search for"
                 }
               ]
             },
-            "description": "Search categories by name"
+            "description": "Search categories by name (case-insensitive partial match)"
           }
         },
         {
@@ -135,7 +137,7 @@
               "mode": "raw",
               "raw": "{\n    \"name\": \"Fantasy\",\n    \"description\": \"Fantasy literature genre\"\n}"
             },
-            "description": "Create a new category"
+            "description": "Create a new category. Name must be unique."
           }
         },
         {
@@ -143,7 +145,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/categories/1",
-            "description": "Get category by ID"
+            "description": "Get category details by ID"
           }
         },
         {
@@ -151,7 +153,7 @@
           "request": {
             "method": "DELETE",
             "url": "http://localhost:8080/api/categories/1",
-            "description": "Delete category by ID"
+            "description": "Delete category by ID. Will fail if category has associated books."
           }
         }
       ]
@@ -164,7 +166,15 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/books",
-            "description": "Retrieve all books"
+            "description": "Retrieve all books in the system"
+          }
+        },
+        {
+          "name": "Get Active Books",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/api/books/active",
+            "description": "Get all books that are currently available (not borrowed)"
           }
         },
         {
@@ -180,12 +190,12 @@
                 {
                   "key": "title",
                   "value": "{{title}}",
-                  "description": "Search by title"
+                  "description": "Search by title (case-insensitive partial match)"
                 },
                 {
                   "key": "isbn",
                   "value": "{{isbn}}",
-                  "description": "Search by ISBN"
+                  "description": "Search by exact ISBN"
                 },
                 {
                   "key": "authorId",
@@ -199,7 +209,7 @@
                 }
               ]
             },
-            "description": "Search books with various criteria"
+            "description": "Search books with various criteria. All parameters are optional."
           }
         },
         {
@@ -217,7 +227,7 @@
               "mode": "raw",
               "raw": "{\n    \"title\": \"Harry Potter and the Philosopher's Stone\",\n    \"description\": \"The first book in the Harry Potter series\",\n    \"isbn\": \"9780747532743\",\n    \"publicationYear\": 1997,\n    \"imgUrl\": \"https://example.com/book-cover.jpg\",\n    \"authorId\": 1,\n    \"categoryIds\": [1]\n}"
             },
-            "description": "Create a new book"
+            "description": "Create a new book. ISBN must be unique, author and categories must exist."
           }
         },
         {
@@ -233,9 +243,9 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Harry Potter and the Philosopher's Stone\",\n    \"description\": \"Updated description: The first book in the Harry Potter series, where Harry discovers he's a wizard\",\n    \"isbn\": \"9780747532743\",\n    \"publicationYear\": 1997,\n    \"imgUrl\": \"https://example.com/book-cover-updated.jpg\",\n    \"authorId\": 1,\n    \"categoryIds\": [1, 2]\n}"
+              "raw": "{\n    \"title\": \"Harry Potter and the Philosopher's Stone\",\n    \"description\": \"Updated description: The first book in the Harry Potter series\",\n    \"isbn\": \"9780747532743\",\n    \"publicationYear\": 1997,\n    \"imgUrl\": \"https://example.com/book-cover-updated.jpg\",\n    \"authorId\": 1,\n    \"categoryIds\": [1, 2]\n}"
             },
-            "description": "Update an existing book"
+            "description": "Update an existing book. ISBN must remain unique, author and categories must exist."
           }
         },
         {
@@ -243,7 +253,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/books/1",
-            "description": "Get book by ID"
+            "description": "Get book details by ID"
           }
         },
         {
@@ -251,7 +261,7 @@
           "request": {
             "method": "DELETE",
             "url": "http://localhost:8080/api/books/1",
-            "description": "Delete book by ID"
+            "description": "Delete book by ID. Will fail if book is currently borrowed."
           }
         }
       ]
@@ -264,7 +274,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/members",
-            "description": "Retrieve all members"
+            "description": "Retrieve all library members"
           }
         },
         {
@@ -280,16 +290,16 @@
                 {
                   "key": "name",
                   "value": "{{name}}",
-                  "description": "Search by name"
+                  "description": "Search by first or last name (case-insensitive partial match)"
                 },
                 {
                   "key": "email",
                   "value": "{{email}}",
-                  "description": "Search by email"
+                  "description": "Search by exact email address"
                 }
               ]
             },
-            "description": "Search members by name or email"
+            "description": "Search members by name or email. All parameters are optional."
           }
         },
         {
@@ -307,7 +317,7 @@
               "mode": "raw",
               "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"1234567890\"\n}"
             },
-            "description": "Create a new member"
+            "description": "Create a new member. Email must be unique."
           }
         },
         {
@@ -325,7 +335,7 @@
               "mode": "raw",
               "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"0987654321\"\n}"
             },
-            "description": "Update an existing member"
+            "description": "Update an existing member. Email must remain unique."
           }
         },
         {
@@ -333,15 +343,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/members/1",
-            "description": "Get member by ID"
-          }
-        },
-        {
-          "name": "Delete Member",
-          "request": {
-            "method": "DELETE",
-            "url": "http://localhost:8080/api/members/1",
-            "description": "Delete member by ID"
+            "description": "Get member details by ID"
           }
         }
       ]
@@ -388,7 +390,7 @@
                 }
               ]
             },
-            "description": "Get all borrowed books for a specific member"
+            "description": "Get all borrowed books for a specific member. Use current=true to see only active borrows."
           }
         },
         {
@@ -396,7 +398,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/borrowed-books/book/{{bookId}}",
-            "description": "Get borrow history for a specific book"
+            "description": "Get complete borrow history for a specific book"
           }
         },
         {
@@ -417,7 +419,7 @@
                 }
               ]
             },
-            "description": "Get all books that are due before a specific date"
+            "description": "Get all books that are due before a specific date. Returns only BORROWED status books."
           }
         },
         {
@@ -458,7 +460,7 @@
                 }
               ]
             },
-            "description": "Borrow a book for a member"
+            "description": "Borrow a book for a member. Will fail if book is already borrowed or member has overdue books."
           }
         },
         {
@@ -466,7 +468,7 @@
           "request": {
             "method": "POST",
             "url": "http://localhost:8080/api/borrowed-books/{{id}}/return",
-            "description": "Return a borrowed book"
+            "description": "Return a borrowed book. Will update the return date and status to RETURNED."
           }
         }
       ]
@@ -503,23 +505,7 @@
           "request": {
             "method": "GET",
             "url": "http://localhost:8080/api/dashboard/members/top-borrowers",
-            "description": "Get top 10 members who borrow the most with:\n- Member ID\n- Full name\n- Total borrow count\n- Current borrows count"
-          }
-        },
-        {
-          "name": "Get Overdue Books",
-          "request": {
-            "method": "GET",
-            "url": "http://localhost:8080/api/dashboard/borrows/overdue",
-            "description": "Get all currently overdue books with:\n- Book title\n- Member name\n- Due date\n- Days overdue"
-          }
-        },
-        {
-          "name": "Get Recent Borrows",
-          "request": {
-            "method": "GET",
-            "url": "http://localhost:8080/api/dashboard/borrows/recent",
-            "description": "Get 10 most recent borrows with:\n- Book title\n- Member name\n- Borrow date\n- Due date\n- Current status"
+            "description": "Get top 10 members by borrow count with:\n- Member ID\n- Member name\n- Total borrow count\n- Current borrows count"
           }
         }
       ]

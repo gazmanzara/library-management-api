@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,8 +34,8 @@ public class Member {
     @NotNull(message = "Phone is required")
     private String phone;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "member-borrow")
     private Set<BorrowedBook> borrowedBooks = new HashSet<>();
 
     public Member() {
@@ -87,6 +87,7 @@ public class Member {
         this.phone = phone;
     }
 
+    @JsonIgnore
     public Set<BorrowedBook> getBorrowedBooks() {
         return borrowedBooks;
     }
@@ -95,6 +96,14 @@ public class Member {
         this.borrowedBooks = borrowedBooks;
     }
 
+    @JsonProperty("currentBorrows")
+    public Set<Long> getCurrentBorrowIds() {
+        return getCurrentBorrows().stream()
+                .map(BorrowedBook::getId)
+                .collect(Collectors.toSet());
+    }
+
+    @JsonIgnore
     public Set<BorrowedBook> getCurrentBorrows() {
         return borrowedBooks.stream()
                 .filter(borrow -> borrow.getStatus() == BorrowStatus.BORROWED)
@@ -115,4 +124,4 @@ public class Member {
         borrowedBooks.remove(borrowedBook);
         borrowedBook.setMember(null);
     }
-} 
+}

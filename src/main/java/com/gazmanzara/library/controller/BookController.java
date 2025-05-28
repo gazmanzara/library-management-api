@@ -1,5 +1,6 @@
 package com.gazmanzara.library.controller;
 
+import com.gazmanzara.library.dto.BookDTO;
 import com.gazmanzara.library.model.Book;
 import com.gazmanzara.library.model.Author;
 import com.gazmanzara.library.model.Category;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -40,9 +42,10 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
+    public ResponseEntity<List<BookDTO>> getAllBooks() {
         List<Book> books = bookRepository.findAll();
-        return ResponseEntity.ok(books);
+        List<BookDTO> result = books.stream().map(BookDTO::new).toList();
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/search")

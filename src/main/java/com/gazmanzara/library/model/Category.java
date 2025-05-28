@@ -10,10 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class,
-    property = "id"
-)
 public class Category {
 
     @Id
@@ -31,7 +27,8 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     private Set<Book> books = new HashSet<>();
 
-    public Category() {}
+    public Category() {
+    }
 
     public Category(String name) {
         this.name = name;

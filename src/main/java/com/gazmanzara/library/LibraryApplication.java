@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LibraryApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(LibraryApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(LibraryApplication.class, args);
+    }
 
-	@GetMapping("/")
-	public String welcome() {
-		return "Elcome to Library API!!!";
-	}
+    @GetMapping("/")
+    public String welcome() {
+        return "Welcome to Library API!!! Open this link to see the interface https://library-management-alpha-self.vercel.app/";
+    }
 }

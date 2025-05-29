@@ -11,10 +11,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**") // Only allow CORS for our API endpoints
                 .allowedOrigins(
-                        "http://localhost:3000", // React default port
+                        "https://library-management-alpha-self.vercel.app/",
                         "http://localhost:8080", // Spring Boot default port
-                        "http://localhost:5173", // Vite default port
-                        "http://localhost:4200" // Angular default port
+                        "http://localhost:5173" // Vite default port
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("Origin", "Content-Type", "Accept", "Authorization")

@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**") // Only allow CORS for our API endpoints
                 .allowedOrigins(
                         "https://library-management-alpha-self.vercel.app/",
+                        "http://localhost:3000", // Spring Boot default port
                         "http://localhost:8080", // Spring Boot default port
                         "http://localhost:5173" // Vite default port
                 )
